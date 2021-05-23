@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 게시판 처리 SQL -->
+<mapper namespace="DAO.BoardMapper"> <!-- 인터페이스의 경로 -->
+
+<insert id="insertBoard" parameterType="Board">
+	INSERT INTO BOARDINFO2
+	(
+		BOARDSEQ,
+		ID,
+		BOARDTITLE,
+		BOARDCONTENT,
+		HITCOUNT,
+		INDATE,
+		FILENAME,
+		FILENAME_ORG
+	)
+	VALUES
+	(
+		BOARDSEQ.NEXTVAL,
+		#{id},
+		#{boardTitle},
+		#{boardContent},
+		0,
+		sysdate,
+		#{fileName},
+		#{fileName_org}
+	)
+	
+</insert>
+
+<select id="selectBoardList" resultType="Board" parameterType="String">
+	SELECT
+		BOARDSEQ,
+		ID,
+		BOARDTITLE,
+		HITCOUNT,
+		INDATE
+	FROM
+		BOARDINFO2
+		<if test="_parameter!=null">
+	WHERE
+		BOARDTITLE LIKE '%'||#{_parameter}||'%'
+	</if>
+	ORDER BY
+		INDATE DESC
+</select>
+
+<select id="selectBoardDetail" parameterType="String" resultType="Board">
+	SELECT
+		BOARDSEQ,
+		ID,
+		BOARDTITLE,
+		BOARDCONTENT,
+		HITCOUNT,
+		INDATE,
+		FILENAME,
+		FILENAME_ORG
+	FROM
+		BOARDINFO2
+	WHERE
+		BOARDSEQ=#{boardSeq}
+</select>
+
+<update id="updateBoard" parameterType="Board">
+	UPDATE BOARDINFO2
+	SET
+		BOARDTITLE=#{boardTitle},
+		BOARDCONTENT=#{boardContent},
+		FILENAME=#{fileName},
+		FILENAME_ORG=#{fileName_org}
+	WHERE
+		BOARDSEQ=#{boardSeq}
+</update>
+
+<delete id="deleteBoard" parameterType="String">
+	DELETE FROM BOARDINFO2 WHERE BOARDSEQ=#{boardSeq}
+</delete>
+
+<update id="increaseHitCount">
+	UPDATE BOARDINFO2
+	SET
+		HITCOUNT=HITCOUNT+1
+	WHERE
+		BOARDSEQ=#{boardSeq}
+</update>
+
+<select id="totalCount" resultType="int" parameterType="String">
+	select
+		count(BOARDSEQ)
+	from
+		BOARDINFO2
+	<if test="_parameter!=null">
+	WHERE
+		BOARDTITLE LIKE '%'||#{_parameter}||'%'
+	</if>
+</select>
+
+<insert id="insertComment" parameterType="Comment">
+	INSERT INTO COMMENTS
+	(
+		COMMENTSEQ,
+		BOARDSEQ,
+		ID,
+		COMMENTS,
+		INDATE,
+		PARENTSEQ
+	)
+	VALUES
+	(	COMMENTSEQ.NEXTVAL,
+		#{boardSeq},
+		#{id},
+		#{comments},
+		sysdate,
+		#{parentSeq}
+	)
+</insert>
+
+<select id="selectComment" resultType="Comment" parameterType="String">
+	SELECT
+		ID,
+		COMMENTS,
+		INDATE,
+		COMMENTSEQ,
+		BOARDSEQ
+	FROM
+		COMMENTS
+	WHERE
+		BOARDSEQ=#{boardSeq}
+	ORDER BY INDATE
+</select>
+
+<update id="deleteComment" parameterType="String">
+	UPDATE
+		COMMENTS
+	SET
+		COMMENTS='(삭제된 댓글입니다.)'
+	WHERE
+		COMMENTSEQ=#{commentSeq}
+</update>
+</mapper>
