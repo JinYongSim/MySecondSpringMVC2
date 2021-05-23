@@ -7,73 +7,59 @@
 <mapper namespace="DAO.BoardMapper"> <!-- 인터페이스의 경로 -->
 
 <insert id="insertBoard" parameterType="Board">
-	INSERT INTO BOARDINFO2
-	(
-		BOARDSEQ,
-		ID,
-		BOARDTITLE,
-		BOARDCONTENT,
-		HITCOUNT,
-		INDATE,
-		FILENAME,
-		FILENAME_ORG
-	)
-	VALUES
-	(
-		BOARDSEQ.NEXTVAL,
-		#{id},
-		#{boardTitle},
-		#{boardContent},
-		0,
-		sysdate,
-		#{fileName},
-		#{fileName_org}
-	)
-	
+    INSERT INTO boardinfo2
+         ( boardseq
+         , id
+         , boardtitle
+         , boardcontent
+         , hitcount
+         , indate
+         , filename
+         , filename_org )
+    VALUES
+         ( boardseq.NEXTVAL
+         , #{id}
+         , #{boardTitle}
+         , #{boardContent}
+         , 0
+         , SYSDATE
+         , #{fileName}
+         , #{fileName_org} )
 </insert>
 
 <select id="selectBoardList" resultType="Board" parameterType="String">
-	SELECT
-		BOARDSEQ,
-		ID,
-		BOARDTITLE,
-		HITCOUNT,
-		INDATE
-	FROM
-		BOARDINFO2
-		<if test="_parameter!=null">
-	WHERE
-		BOARDTITLE LIKE '%'||#{_parameter}||'%'
-	</if>
-	ORDER BY
-		INDATE DESC
+    SELECT boardseq
+         , id
+         , boardtitle
+         , hitcount
+         , indate
+      FROM boardinfo2
+    <if test="_parameter!=null">
+     WHERE boardtitle LIKE '%'||#{_parameter}||'%'
+    </if>
+     ORDER BY indate DESC
 </select>
 
 <select id="selectBoardDetail" parameterType="String" resultType="Board">
-	SELECT
-		BOARDSEQ,
-		ID,
-		BOARDTITLE,
-		BOARDCONTENT,
-		HITCOUNT,
-		INDATE,
-		FILENAME,
-		FILENAME_ORG
-	FROM
-		BOARDINFO2
-	WHERE
-		BOARDSEQ=#{boardSeq}
+    SELECT boardseq
+         , id
+         , boardtitle
+         , boardcontent
+         , hitcount
+         , indate
+         , filename
+         , filename_org
+      FROM boardinfo2
+     WHERE boardseq = #{boardSeq}
 </select>
 
 <update id="updateBoard" parameterType="Board">
-	UPDATE BOARDINFO2
-	SET
-		BOARDTITLE=#{boardTitle},
-		BOARDCONTENT=#{boardContent},
-		FILENAME=#{fileName},
-		FILENAME_ORG=#{fileName_org}
-	WHERE
-		BOARDSEQ=#{boardSeq}
+    UPDATE boardinfo2
+       SET boardtitle = #{boardTitle}
+         , boardcontent = #{boardContent}
+         , filename = #{fileName}
+         , filename_org = #{fileName_org}
+     WHERE boardseq = #{boardSeq}
 </update>
 
 <delete id="deleteBoard" parameterType="String">
